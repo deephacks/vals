@@ -1,19 +1,3 @@
-/*
-* JBoss, Home of Professional Open Source
-* Copyright 2009, Red Hat Middleware LLC, and individual contributors
-* by the @authors tag. See the copyright.txt in the distribution for a
-* full listing of individual contributors.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* http://www.apache.org/licenses/LICENSE-2.0
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
 package org.deephacks.vals.processor;
 
 import javax.annotation.Nullable;
@@ -36,31 +20,29 @@ import java.util.List;
 
 public class CompilerUtils {
 
-	private final JavaCompiler compiler;
+  private final JavaCompiler compiler;
 
-	private final String sourceBaseDir;
+  private final String sourceBaseDir;
   private final File generatedSources = new File("target/generated-test-sources/annotations");
   private final File testClasses = new File("target/test-classes");
   private final File classes = new File("target/classes");
-
-
 
   public CompilerUtils() {
     this(ToolProvider.getSystemJavaCompiler());
   }
 
-	public CompilerUtils(JavaCompiler compiler) {
-		this.compiler = compiler;
-		String basePath;
-		try {
-			basePath = new File( "." ).getCanonicalPath();
-		}
-		catch ( IOException e ) {
-			throw new RuntimeException( e );
-		}
+  public CompilerUtils(JavaCompiler compiler) {
+    this.compiler = compiler;
+    String basePath;
+    try {
+      basePath = new File( "." ).getCanonicalPath();
+    }
+    catch ( IOException e ) {
+      throw new RuntimeException( e );
+    }
 
-		this.sourceBaseDir = basePath + "/src/test/java";
-	}
+    this.sourceBaseDir = basePath + "/src/test/java";
+  }
 
   public void compile(Class<?>... classes) {
     compile(classes, true);
@@ -92,30 +74,30 @@ public class CompilerUtils {
     return files.toArray(new File[files.size()]);
   }
 
-	public boolean compile(Processor annotationProcessor, DiagnosticCollector<JavaFileObject> diagnostics, boolean clean, File... sourceFiles) {
-		StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
+  public boolean compile(Processor annotationProcessor, DiagnosticCollector<JavaFileObject> diagnostics, boolean clean, File... sourceFiles) {
+    StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
 
-		Iterable<? extends JavaFileObject> compilationUnits = fileManager.getJavaFileObjects(sourceFiles);
+    Iterable<? extends JavaFileObject> compilationUnits = fileManager.getJavaFileObjects(sourceFiles);
 
-		List<String> options = new ArrayList<>();
+    List<String> options = new ArrayList<>();
 
-		try {
+    try {
       if (clean) {
         cleanGeneratedClasses();
       }
       fileManager.setLocation(StandardLocation.CLASS_PATH, Arrays.asList(classes, testClasses, getJarPath(Nullable.class)));
       fileManager.setLocation(StandardLocation.SOURCE_OUTPUT, Arrays.asList(generatedSources));
       fileManager.setLocation(StandardLocation.CLASS_OUTPUT, Arrays.asList(testClasses));
-		}
-		catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+    }
+    catch (IOException e) {
+      throw new RuntimeException(e);
+    }
 
-		CompilationTask task = compiler.getTask(null, fileManager, diagnostics, options, options, compilationUnits);
-		task.setProcessors( Arrays.asList( annotationProcessor ) );
+    CompilationTask task = compiler.getTask(null, fileManager, diagnostics, options, options, compilationUnits);
+    task.setProcessors( Arrays.asList( annotationProcessor ) );
 
-		return task.call();
-	}
+    return task.call();
+  }
   private static File getJarPath(Class<?> cls) {
     return new File(cls.getProtectionDomain().getCodeSource().getLocation().getPath());
   }
