@@ -1,5 +1,6 @@
 package org.deephacks.vals.processor;
 
+import org.deephacks.vals.processor.Proxy.Builder;
 import org.deephacks.vals.processor.virtualvalue.DefaultVirtual;
 import org.deephacks.vals.processor.virtualvalue.IllegalPropertyVirtual;
 import org.deephacks.vals.processor.virtualvalue.InnerVirtual;
@@ -10,7 +11,6 @@ import org.deephacks.vals.processor.virtualvalue.NullablePrimitiveVirtual;
 import org.deephacks.vals.processor.virtualvalue.NullableVirtual;
 import org.deephacks.vals.processor.virtualvalue.TypesVirtual;
 import org.deephacks.vals.processor.virtualvalue.TypesVirtual.ReferenceClass;
-import org.deephacks.vals.processor.Proxy.Builder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.matchers.JUnitMatchers;
@@ -70,6 +70,7 @@ public class VirtualValueTest extends BaseTest {
     assertTrue(o1.hashCode() == o2.hashCode());
 
     String toString = "TypesVirtual{" +
+            "anEnum=ONE," +
             "booleanObject=true," +
             "booleanPrim=true," +
             "booleanPrimArray=[true]," +
@@ -254,6 +255,7 @@ public class VirtualValueTest extends BaseTest {
             .set(TypesVirtual::getReferenceClass, r1)
             .set(TypesVirtual::getReferenceClassList, list)
             .set(TypesVirtual::getReferenceClassSet, set)
-            .set(TypesVirtual::getReferenceClassMap, map);
+            .set(TypesVirtual::getReferenceClassMap, map)
+            .set(TypesVirtual::getAnEnum, AnEnum.ONE);
   }
 }

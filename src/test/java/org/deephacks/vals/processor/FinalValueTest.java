@@ -70,6 +70,7 @@ public class FinalValueTest extends BaseTest {
     assertTrue(o1.hashCode() == o2.hashCode());
 
     String toString = "TypesFinal{" +
+            "anEnum=ONE," +
             "booleanObject=true," +
             "booleanPrim=true," +
             "booleanPrimArray=[true]," +
@@ -230,7 +231,8 @@ public class FinalValueTest extends BaseTest {
             .set(TypesFinal::getReferenceClass, r1)
             .set(TypesFinal::getReferenceClassList, list)
             .set(TypesFinal::getReferenceClassSet, set)
-            .set(TypesFinal::getReferenceClassMap, map);
+            .set(TypesFinal::getReferenceClassMap, map)
+            .set(TypesFinal::getAnEnum, AnEnum.ONE);
   }
 
 }

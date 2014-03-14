@@ -1,6 +1,7 @@
 package org.deephacks.vals.processor.finalvalue;
 
 import org.deephacks.vals.FinalValue;
+import org.deephacks.vals.processor.AnEnum;
 
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,8 @@ public interface TypesFinal {
   char[] getCharPrimArray();
   boolean getBooleanPrim();
   boolean[] getBooleanPrimArray();
+
+  AnEnum getAnEnum();
 
   ReferenceClass getReferenceClass();
   List<ReferenceClass> getReferenceClassList();
