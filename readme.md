@@ -2,6 +2,66 @@
 
 The purpose of vals is to provide Java programmers with a non-intrusive and productive way of creating extendable immutable value objects with automatically generated builders from standard Java interfaces.
 
+### How to use @FinalValue
+
+Create an interface and annotate it with @FinalValue. All non-void, parameterless, getter methods on this interface will be treated as properties, each having same type as the return type of the method. 
+
+Two classes will automatically be generated at compile time.
+
+* A class named FinalValue_[name].java that implement the @FinalValue interface.
+* A builder class named [name]Builder.java that construct @FinalValue interface objects using the Builder pattern.
+
+Both classes follow the following conventions.
+
+* The implementation is fully immutable and implements toString, equals and hashCode based on defined properties.
+* All values are checked for null when constructed/built unless the method is @javax.annotation.Nullable.
+* Properties can define default values by returning them from the method on the interface.
+* @FinalValue interfaces can extend any interface as long as it provide a default implementation.
+
+
+### pom.xml
+
+Notice that that these dependencies only require the 'provided' scope which means they will not be packaged with the application.
+
+```xml
+<dependency>
+  <groupId>org.deephacks.vals</groupId>
+  <artifactId>vals</artifactId>
+  <version>0.5.1</version>
+  <scope>provided</scope>
+</dependency>
+<dependency>
+  <groupId>com.sun.codemodel</groupId>
+  <artifactId>codemodel</artifactId>
+  <version>2.6</version>
+  <scope>provided</scope>
+</dependency>
+```
+This plugin may be required for intellij to recognize generated source files.
+
+```xml
+<plugin>
+  <groupId>org.codehaus.mojo</groupId>
+  <artifactId>build-helper-maven-plugin</artifactId>
+  <executions>
+    <execution>
+      <id>add-source</id>
+      <phase>generate-sources</phase>
+      <goals>
+        <goal>add-source</goal>
+      </goals>
+      <configuration>
+        <sources>
+          <source>${basedir}/target/generated-sources/annotations</source>
+        </sources>
+      </configuration>
+    </execution>
+  </executions>
+</plugin>
+```
+
+
+
 ### @FinalValue example
 
 ```java
