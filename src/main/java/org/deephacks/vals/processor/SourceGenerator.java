@@ -18,10 +18,12 @@ import com.sun.codemodel.JType;
 import com.sun.codemodel.JVar;
 import org.deephacks.vals.processor.TypeValue.PropertyValue;
 
+import javax.annotation.Generated;
 import java.io.ByteArrayOutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
@@ -55,6 +57,9 @@ abstract class SourceGenerator {
       // define subclass implementing interface
       this.subclass = codeModel._class(type.getSubClassName());
       JClass realClass = codeModel.ref(type.getClassName());
+      subclass.annotate(Generated.class)
+              .param("value", AnnotationProcessor.class.getName())
+              .param("date", LocalDateTime.now().toString());
       subclass._implements(realClass);
 
       JMethod constructor = subclass.constructor(JMod.NONE);
@@ -160,6 +165,9 @@ abstract class SourceGenerator {
   public String generateBuilderSource() {
     try {
       JDefinedClass builderclass = codeModel._class(type.getBuilderClassName());
+      builderclass.annotate(Generated.class)
+              .param("value", AnnotationProcessor.class.getName())
+              .param("date", LocalDateTime.now().toString());
       JClass subclass = codeModel.ref(type.getSubClassName());
       JClass realClass = codeModel.ref(type.getClassName());
 
