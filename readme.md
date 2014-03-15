@@ -1,11 +1,11 @@
 ### vals - immutable interfaces
 
-The purpose of vals is to provide Java programmers with a non-intrusive and highly productive way of creating extendable immutable value objects with automatically generated builders from standard Java interfaces.
+The purpose of vals is to provide Java programmers with a non-intrusive and productive way of creating extendable immutable value objects with automatically generated builders from standard Java interfaces.
 
 ### @FinalValue example
 
 ```java
-@VirtualValue
+@FinalValue
 public interface Example {
 
   String getString();
@@ -42,7 +42,7 @@ public interface Example {
   Map<String, InnerValue> getInnerValueMap();
   Set<InnerValue> getInnerValueSet();
 
-  @VirtualValue
+  @FinalValue
   public static interface InnerValue {
     public String getValue();
     public int getInteger();
@@ -50,7 +50,7 @@ public interface Example {
 }
 ```
 
-#### A builder class is generated automatically
+#### A builder class is generated automatically at compile time.
 
 ```java
 InnerValue inner = new InnerValueBuilder().integer(1).value("value").build();
