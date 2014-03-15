@@ -37,6 +37,29 @@ public class VirtualValueSource extends SourceGenerator {
     JVar param = constructor.param(type, virtualStateField);
     JFieldRef ref = JExpr._this().ref(virtualStateField);
     constructor.body().assign(ref, param);
+    for (PropertyValue p : this.type.getProperties()) {
+      nullCheck(constructor, p);
+    }
+  }
+
+  private void nullCheck(JMethod constructor, PropertyValue p) {
+    if (p.isNullable()) {
+      return;
+    }
+    // check value
+    JExpression nullCheck = getSubClassNullCheck(p);
+    if (nullCheck == null) {
+      return;
+    }
+    JInvocation nullPointer = JExpr._new(codeModel._ref(NullPointerException.class));
+    nullPointer.arg(JExpr.lit(p.getName() + " is null."));
+    if (p.isDefault()) {
+      // if value is null, check default.
+      JExpression isNull = nullCheck.cand(JExpr.direct(type.getClassName() + ".super." + p.getGetMethod() + "()").eq(JExpr._null()));
+      constructor.body()._if(isNull)._then()._throw(nullPointer);
+    } else {
+      constructor.body()._if(nullCheck)._then()._throw(nullPointer);
+    }
   }
 
   @Override

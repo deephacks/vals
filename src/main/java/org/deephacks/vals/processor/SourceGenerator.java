@@ -58,13 +58,9 @@ abstract class SourceGenerator {
       subclass._implements(realClass);
 
       JMethod constructor = subclass.constructor(JMod.NONE);
-      generateSubClassConstructor(constructor);
-
-      for (PropertyValue p : type.getProperties()) {
-        nullCheck(constructor, p);
-      }
 
       generateSubClassFields();
+      generateSubClassConstructor(constructor);
       generateSubClassMethods();
 
       generateEquals(subclass, realClass);
@@ -159,27 +155,6 @@ abstract class SourceGenerator {
       }
       equals.body()._return(JExpr.TRUE);
     }
-  }
-
-  private void nullCheck(JMethod constructor, PropertyValue p) {
-    if (p.isNullable()) {
-      return;
-    }
-    // check value
-    JExpression nullCheck = getSubClassNullCheck(p);
-    if (nullCheck == null) {
-      return;
-    }
-    JInvocation nullPointer = JExpr._new(codeModel._ref(NullPointerException.class));
-    nullPointer.arg(JExpr.lit(p.getName() + " is null."));
-    if (p.isDefault()) {
-      // if value is null, check default.
-      JExpression isNull = nullCheck.cand(JExpr.direct(type.getClassName() + ".super." + p.getGetMethod() + "()").eq(JExpr._null()));
-      constructor.body()._if(isNull) ._then()._throw(nullPointer);
-    } else {
-      constructor.body()._if(nullCheck)._then()._throw(nullPointer);
-    }
-
   }
 
   public String generateBuilderSource() {

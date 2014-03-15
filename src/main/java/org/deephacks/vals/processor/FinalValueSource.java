@@ -6,9 +6,9 @@ import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JFieldRef;
 import com.sun.codemodel.JFieldVar;
+import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
-import com.sun.codemodel.JOp;
 import com.sun.codemodel.JType;
 import com.sun.codemodel.JVar;
 import org.deephacks.vals.processor.TypeValue.PropertyValue;
@@ -25,11 +25,25 @@ public class FinalValueSource extends SourceGenerator {
 
   @Override
   public void generateSubClassConstructor(JMethod constructor) throws ClassNotFoundException {
-    for (PropertyValue p : type.getProperties()) {
+    for (PropertyValue p : this.type.getProperties()) {
       JType type = codeModel.parseType(p.getTypeString());
-      JVar param = constructor.param(type, p.getName());
-      JFieldRef ref = JExpr._this().ref(param);
-      constructor.body().assign(ref, param);
+      JVar constParam = constructor.param(type, p.getName());
+      JFieldRef ref = JExpr._this().ref(constParam);
+
+      if (p.isDefault()) {
+        JExpression superGetMethod = JExpr.direct(this.type.getClassName() + ".super." + p.getGetMethod() + "()");
+        JExpression useSuperMethodValueCheck = constParam.eq(JExpr._null()).cand(superGetMethod.ne(JExpr._null()));
+        constructor.body()._if(useSuperMethodValueCheck)._then().assign(constParam, superGetMethod);
+      }
+      constructor.body().assign(ref, constParam);
+
+      JExpression nullCheck = getSubClassNullCheck(p);
+      if (nullCheck == null) {
+        continue;
+      }
+      JInvocation nullPointer = JExpr._new(codeModel._ref(NullPointerException.class));
+      nullPointer.arg(JExpr.lit(p.getName() + " is null."));
+      constructor.body()._if(nullCheck)._then()._throw(nullPointer);
     }
   }
 
@@ -49,15 +63,7 @@ public class FinalValueSource extends SourceGenerator {
     if (p.isArray()) {
       codeModel.ref(Arrays.class);
     }
-    if (p.isDefault()) {
-      // invoke default method if value is null
-      JVar value = method.body().decl(returnType, "value").init(ref);
-      JExpression valueNotNull = JOp.ne(value, JExpr._null());
-      JExpression invokeDefault = JExpr.direct(type.getClassName() + ".super." + p.getGetMethod() + "()");
-      method.body()._return(JOp.cond(valueNotNull, value, invokeDefault));
-    } else {
-      method.body().block()._return(ref);
-    }
+    method.body().block()._return(ref);
   }
 
 
@@ -71,7 +77,7 @@ public class FinalValueSource extends SourceGenerator {
 
   @Override
   protected JExpression getSubClassNullCheck(PropertyValue p) {
-    if (p.isPrimitive()) {
+    if (p.isPrimitive() || p.isNullable()) {
       return null;
     }
     return getSubClassField(p).eq(JExpr._null());
