@@ -145,13 +145,13 @@ public interface Example {
   String getValue2();
 }
 
-// generates NullPointerException("value2 is null.")
+// throws a new NullPointerException("value2 is null.")
 new ExampleBuilder().build();
 
 // ok, since value1 is nullable
 Example e = new ExampleBuilder().value2("value").build();
 
-// use java.util.Optional to access
+// use java.util.Optional to access nullable values
 Optional<String> nullable = Optional.ofNullable(e.getValue1());
 ```
 
@@ -161,19 +161,19 @@ Optional<String> nullable = Optional.ofNullable(e.getValue1());
 @FinalValue
 public interface Example {
 
-  String getForename() {
+  default String getForename() {
     return "Jim";
   }
 
-  List<Integer> getNumbers() {
+  default List<Integer> getNumbers() {
     return Arrays.asList(1, 2, 3);
   }
 
-  Map<String, Integer> getMap() {
+  default Map<String, Integer> getMap() {
     return Collections.singletonMap("value", 1);
   }
 
-  Set<Long> getSet() {
+  default Set<Long> getSet() {
     return Collections.emptySet();
   }
 }
