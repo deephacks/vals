@@ -1,6 +1,6 @@
 ### vals - immutable interfaces
 
-The purpose of vals is to provide Java programmers with a non-intrusive and productive way of creating extendable immutable value objects with automatically generated builders from standard Java interfaces.
+The purpose of vals is to provide Java programmers with a productive way of creating extendable immutable value objects with automatically generated builders from standard Java interfaces.
 
 ### How to use @FinalValue
 
@@ -11,13 +11,14 @@ Two classes will automatically be generated at compile time.
 * A class named FinalValue_[name].java that implement the @FinalValue interface.
 * A builder class named [name]Builder.java that construct @FinalValue interface objects using the Builder pattern.
 
-Both classes follow the following conventions.
+Notice the following conventions.
 
-* The implementation is fully immutable and implements toString, equals and hashCode based on defined properties.
+* The implementation is immutable and implements toString, equals and hashCode based on defined properties.
+* Default hashCode, equals and toString method can be vetoed by the @FinalValue interface using naming conventions.
 * All values are checked for null when constructed/built unless the method is @javax.annotation.Nullable.
 * Properties can define default values by returning them from the method on the interface.
 * @FinalValue interfaces can extend any interface as long as it provide a default implementation.
-
+* A post construction hook can be defined by @FinalValue interfaces that need to validate/constrain properties further.
 
 ### pom.xml
 
@@ -245,6 +246,8 @@ Example example = new ExampleBuilder().build();
 System.out.println(example.getNumbers());
 ```
 
+#### Properties can have default fallback values.
+
 #### Classes can have default methods.
 
 
@@ -268,22 +271,53 @@ System.out.println(p.fullname());
 ```
 
 
-#### Classes can extend interfaces with a default implementation.
+#### Override hashCode, equals and toString.
+
+A @FinalValue interface can override default implementation of hashCode, equals and toString by defining static
+methods following the signature and conventions shown below.
 
 ```java
 @FinalValue
-public interface Person extends Serializable, Comparable<Person> {
+public interface Example {
 
-  String getForename();
+  String getValue1();
+  String getValue2();
+  
+  // Convention: static, name 'equals', two arguments with same type, return boolean.
+  static boolean equals(Example o1, Example o2) {
+    return o1.getValue1().equals(o2.getValue1());
+  }
+  
+  // Convention: static, name 'hashCode', one argument with same type, return int.
+  static int hashCode(Example o) {
+    return o.getValue1().hashCode();
+  }
 
-  String getSurname();
-
-  default int compareTo(Person that) {
-    int result = this.getForename().compareTo(that.getForename());
-    if (result == 0){
-      result = this.getSurname().compareTo(that.getSurname());
-    }
-    return result;
+  // Convention: static, name 'toString', one argument with same type, return String.
+  static String toString(OverrideAndPostConstructFinal o) {
+    return o.getValue1();
   }
 }
 ```
+
+
+#### Post construction hook.
+
+A @FinalValue interface that need to validate/constrain properties further can define a method following the signature and conventions shown below.
+
+```java
+@FinalValue
+public interface Example {
+
+  String getValue1();
+  String getValue2();
+  
+  // Convention: static, name 'postConstruct', one argument with same type, return void.
+  static void postConstruct(OverrideAndPostConstructFinal o) {
+    if (o.getValue1().equals("illegal")) {
+      throw new IllegalArgumentException("illegal value1");
+    }
+  }
+}
+```
+
