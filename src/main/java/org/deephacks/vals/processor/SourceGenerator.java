@@ -66,6 +66,10 @@ abstract class SourceGenerator {
 
       generateSubClassFields();
       generateSubClassConstructor(constructor);
+      if (type.hasPostConstruct()) {
+        constructor.body().directStatement(type.getClassName() + ".postConstruct(this);");
+      }
+
       generateSubClassMethods();
 
       generateEquals(subclass, realClass);
@@ -82,7 +86,7 @@ abstract class SourceGenerator {
     JMethod toString = subclass.method(JMod.PUBLIC, String.class, "toString");
     toString.annotate(Override.class);
     if (type.hasToString()) {
-      toString.body()._return(JExpr.direct(type.getClassName() + ".super._toString()"));
+      toString.body()._return(JExpr.direct(type.getClassName() + ".toString(this)"));
     } else {
       StringBuilder sb = new StringBuilder();
       sb.append("return \"").append(type.getSimpleClassName()).append("{").append("\"\n");
@@ -108,7 +112,7 @@ abstract class SourceGenerator {
     JMethod hashCode = subclass.method(JMod.PUBLIC, int.class, "hashCode");
     hashCode.annotate(Override.class);
     if (type.hasHashCode()) {
-      hashCode.body()._return(JExpr.direct(type.getClassName() + ".super._hashCode()"));
+      hashCode.body()._return(JExpr.direct(type.getClassName() + ".hashCode(this)"));
     } else {
       JVar h = hashCode.body().decl(codeModel.INT, "h").init(JExpr.lit(1));
       hashCode.body().directStatement("h *= 1000003;");
@@ -130,8 +134,9 @@ abstract class SourceGenerator {
     equals.annotate(SuppressWarnings.class).param("value", "all");
     JVar o = equals.param(Object.class, "o");
     if (type.hasEquals()) {
-
-      equals.body()._return(JExpr.direct(type.getClassName() + ".super._equals(o)"));
+      equals.body()._if(JOp.eq(o, JExpr._this()))._then()._return(JExpr.TRUE);
+      equals.body()._if(JOp.not(JOp._instanceof(o, subclass)))._then()._return(JExpr.FALSE);
+      equals.body()._return(JExpr.direct(type.getClassName() + ".equals(this, (" + type.getClassName() + ") o)"));
     } else {
       equals.body()._if(JOp.eq(o, JExpr._this()))._then()._return(JExpr.TRUE);
       equals.body()._if(JOp.not(JOp._instanceof(o, subclass)))._then()._return(JExpr.FALSE);

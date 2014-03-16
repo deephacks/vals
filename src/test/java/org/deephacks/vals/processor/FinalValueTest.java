@@ -8,12 +8,14 @@ import org.deephacks.vals.processor.finalvalue.InnerFinal.InnerClass1;
 import org.deephacks.vals.processor.finalvalue.InnerFinal.InnerClass1.InnerClass2;
 import org.deephacks.vals.processor.finalvalue.NotInterfaceFinal;
 import org.deephacks.vals.processor.finalvalue.NullableFinal;
+import org.deephacks.vals.processor.finalvalue.OverrideAndPostConstructFinal;
 import org.deephacks.vals.processor.finalvalue.TypesFinal;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.matchers.JUnitMatchers;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,7 +35,7 @@ public class FinalValueTest extends BaseTest {
 
   @Before
   public void setup() {
-    compile(TypesFinal.class, DefaultFinal.class, NullableFinal.class, InnerFinal.class);
+    compile(TypesFinal.class, DefaultFinal.class, NullableFinal.class, InnerFinal.class, OverrideAndPostConstructFinal.class);
   }
 
   @Test
@@ -174,6 +176,37 @@ public class FinalValueTest extends BaseTest {
 
     assertTrue(n1.hashCode() == n2.hashCode());
     assertEquals(n1.toString(), n2.toString());
+  }
+
+  @Test
+  public void testOverrideAndPostConstruct() {
+    OverrideAndPostConstructFinal o1 = new Builder<>(OverrideAndPostConstructFinal.class)
+            .set(OverrideAndPostConstructFinal::getValue1, "legal")
+            .set(OverrideAndPostConstructFinal::getValue2, "v1")
+            .build().get();
+
+    OverrideAndPostConstructFinal o2 = new Builder<>(OverrideAndPostConstructFinal.class)
+            .set(OverrideAndPostConstructFinal::getValue1, "legal")
+            .set(OverrideAndPostConstructFinal::getValue2, "v2")
+            .build().get();
+
+    assertTrue(o1.equals(o2));
+    assertTrue(o2.equals(o1));
+    assertEquals(o1.hashCode(), o2.hashCode());
+    assertEquals(o1.toString(), "legal");
+
+    try {
+      new Builder<>(OverrideAndPostConstructFinal.class)
+              .set(OverrideAndPostConstructFinal::getValue1, "illegal")
+              .set(OverrideAndPostConstructFinal::getValue2, "v1")
+              .build().get();
+      fail("Should fail with IllegalArgumentException");
+    } catch (RuntimeException e) {
+      // dig to find the real exception since test use reflection
+      InvocationTargetException ex = (InvocationTargetException) e.getCause();
+      IllegalArgumentException illegal = (IllegalArgumentException) ex.getTargetException();
+      assertThat(illegal.getMessage(), containsString("illegal"));
+    }
   }
 
   @Test

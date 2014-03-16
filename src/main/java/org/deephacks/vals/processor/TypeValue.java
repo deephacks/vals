@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.ArrayType;
@@ -37,6 +38,7 @@ final class TypeValue {
   private boolean hasToString = false;
   private boolean hasHashCode = false;
   private boolean hasEquals = false;
+  private boolean hasPostConstruct = false;
   private CompileException compileException = new CompileException();
   private String subClassPrefix;
 
@@ -65,6 +67,8 @@ final class TypeValue {
         hasHashCode = true;
       } else if (isEquals(m)) {
         hasEquals = true;
+      } else if (isPostConstruct(m)) {
+        hasPostConstruct = true;
       }
     }
     methods = findGetters(methods);
@@ -130,6 +134,10 @@ final class TypeValue {
 
   public boolean hasEquals() {
     return hasEquals;
+  }
+
+  public boolean hasPostConstruct() {
+    return hasPostConstruct;
   }
 
   static String packageNameOf(TypeElement type) {
@@ -204,21 +212,37 @@ final class TypeValue {
             && !((ArrayType) type).getComponentType().getKind().isPrimitive();
   }
 
-  private static boolean isToStringOrEqualsOrHashCode(ExecutableElement method) {
+  private boolean isToStringOrEqualsOrHashCode(ExecutableElement method) {
     return isToString(method) || isEquals(method) || isHashCode(method);
   }
 
-  private static boolean isToString(ExecutableElement method) {
-    return method.getSimpleName().toString().equals("_toString");
+  private boolean isToString(ExecutableElement method) {
+    String name = method.getSimpleName().toString();
+    boolean isStatic = method.getModifiers().contains(Modifier.STATIC);
+    return (isStatic && name.equals("toString") && method.getParameters().size() == 1
+            && method.getParameters().get(0).asType().toString().equals(className));
   }
 
-  private static boolean isHashCode(ExecutableElement method) {
-    return method.getSimpleName().toString().equals("_hashCode") && method.getParameters().isEmpty();
+  private boolean isHashCode(ExecutableElement method) {
+    String name = method.getSimpleName().toString();
+    boolean isStatic = method.getModifiers().contains(Modifier.STATIC);
+    return (isStatic && name.equals("hashCode") && method.getParameters().size() == 1
+            && method.getParameters().get(0).asType().toString().equals(className));
   }
 
-  private static boolean isEquals(ExecutableElement method) {
-    return (method.getSimpleName().toString().equals("_equals") && method.getParameters().size() == 1
-            && method.getParameters().get(0).asType().toString().equals("java.lang.Object"));
+  private boolean isEquals(ExecutableElement method) {
+    String name = method.getSimpleName().toString();
+    boolean isStatic = method.getModifiers().contains(Modifier.STATIC);
+    return (isStatic && name.equals("equals") && method.getParameters().size() == 2
+            && method.getParameters().get(0).asType().toString().equals(className)
+            && method.getParameters().get(1).asType().toString().equals(className));
+  }
+
+  private boolean isPostConstruct(ExecutableElement method) {
+    String name = method.getSimpleName().toString();
+    boolean isStatic = method.getModifiers().contains(Modifier.STATIC);
+    return (isStatic && name.equals("postConstruct") && method.getParameters().size() == 1
+            && method.getParameters().get(0).asType().toString().equals(className));
   }
 
   public void reportCompileException() throws CompileException {

@@ -9,6 +9,7 @@ import org.deephacks.vals.processor.virtualvalue.InnerVirtual.InnerClass1.InnerC
 import org.deephacks.vals.processor.virtualvalue.NotInterfaceVirtual;
 import org.deephacks.vals.processor.virtualvalue.NullablePrimitiveVirtual;
 import org.deephacks.vals.processor.virtualvalue.NullableVirtual;
+import org.deephacks.vals.processor.virtualvalue.OverrideAndPostConstructVirtual;
 import org.deephacks.vals.processor.virtualvalue.TypesVirtual;
 import org.deephacks.vals.processor.virtualvalue.TypesVirtual.ReferenceClass;
 import org.junit.Before;
@@ -16,6 +17,7 @@ import org.junit.Test;
 import org.junit.matchers.JUnitMatchers;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,7 +35,7 @@ public class VirtualValueTest extends BaseTest {
 
   @Before
   public void setup() {
-    compile(DefaultVirtual.class, TypesVirtual.class, NullableVirtual.class, InnerVirtual.class);
+    compile(DefaultVirtual.class, TypesVirtual.class, NullableVirtual.class, InnerVirtual.class, OverrideAndPostConstructVirtual.class);
   }
 
   @Test
@@ -177,6 +179,39 @@ public class VirtualValueTest extends BaseTest {
     assertTrue(n1.hashCode() == n2.hashCode());
     assertEquals(n1.toString(), n2.toString());
   }
+
+
+  @Test
+  public void testOverrideAndPostConstruct() {
+    OverrideAndPostConstructVirtual o1 = new Builder<>(OverrideAndPostConstructVirtual.class)
+            .set(OverrideAndPostConstructVirtual::getValue1, "legal")
+            .set(OverrideAndPostConstructVirtual::getValue2, "v1")
+            .build().get();
+
+    OverrideAndPostConstructVirtual o2 = new Builder<>(OverrideAndPostConstructVirtual.class)
+            .set(OverrideAndPostConstructVirtual::getValue1, "legal")
+            .set(OverrideAndPostConstructVirtual::getValue2, "v2")
+            .build().get();
+
+    assertTrue(o1.equals(o2));
+    assertTrue(o2.equals(o1));
+    assertEquals(o1.hashCode(), o2.hashCode());
+    assertEquals(o1.toString(), "legal");
+
+    try {
+      new Builder<>(OverrideAndPostConstructVirtual.class)
+              .set(OverrideAndPostConstructVirtual::getValue1, "illegal")
+              .set(OverrideAndPostConstructVirtual::getValue2, "v1")
+              .build().get();
+      fail("Should fail with IllegalArgumentException");
+    } catch (RuntimeException e) {
+      // dig to find the real exception since test use reflection
+      InvocationTargetException ex = (InvocationTargetException) e.getCause();
+      IllegalArgumentException illegal = (IllegalArgumentException) ex.getTargetException();
+      assertThat(illegal.getMessage(), containsString("illegal"));
+    }
+  }
+
 
   @Test
   public void testShouldNotCompileNonInterface() {
