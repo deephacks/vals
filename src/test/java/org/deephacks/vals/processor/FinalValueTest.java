@@ -35,7 +35,7 @@ public class FinalValueTest extends BaseTest {
 
   @Before
   public void setup() {
-    compile(TypesFinal.class, DefaultFinal.class, NullableFinal.class, InnerFinal.class, OverrideAndPostConstructFinal.class);
+    compile(TypesFinal.class, DefaultFinal.class, NullableFinal.class, InnerFinal.class, OverrideAndPostConstructFinal.class, WithValue.class);
   }
 
   @Test

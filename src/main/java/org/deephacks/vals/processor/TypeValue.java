@@ -39,10 +39,11 @@ final class TypeValue {
   private boolean hasHashCode = false;
   private boolean hasEquals = false;
   private boolean hasPostConstruct = false;
+  private String builderMethodsPrefix = "";
   private CompileException compileException = new CompileException();
   private String subClassPrefix;
 
-  public TypeValue(ProcessingEnvironment processingEnv, TypeElement type, String subClassPrefix) throws CompileException {
+  public TypeValue(ProcessingEnvironment processingEnv, TypeElement type, String subClassPrefix, String builderMethodsPrefix) throws CompileException {
     Types typeUtils = processingEnv.getTypeUtils();
     this.subClassPrefix = subClassPrefix;
     this.processingEnv = processingEnv;
@@ -50,6 +51,7 @@ final class TypeValue {
     this.builderClassName = generatedBuilderClassname(type);
     this.subClassName = generatedSubclassName(type);
     this.packageName = packageNameOf(type);
+    this.builderMethodsPrefix = builderMethodsPrefix;
 
     /*
     For some reason type.getModifiers() always seem to be Modifier.STATIC even though type is not?!
@@ -86,7 +88,7 @@ final class TypeValue {
       }
 
       PropertyValue prop = new PropertyValue(m.getSimpleName().toString(), m.isDefault(), isNullable,
-              m.getReturnType().getKind(), m.getReturnType().toString());
+              m.getReturnType().getKind(), m.getReturnType().toString(), builderMethodsPrefix);
       if (KEYWORDS.contains(prop.getName())) {
         compileException.add("Properties as Java keyword is not allowed.", m);
       }
@@ -258,8 +260,9 @@ final class TypeValue {
     private String getMethod;
     private TypeKind typeKind;
     private String objectType;
+    private String builderMethodsPrefix;
 
-    public PropertyValue(String name, boolean isDefault, boolean isNullable, TypeKind typeKind, String objectType) {
+    public PropertyValue(String name, boolean isDefault, boolean isNullable, TypeKind typeKind, String objectType, String builderMethodsPrefix) {
       this.getMethod = name;
       name = name.substring(3, name.length());
       this.name = Character.toLowerCase(name.charAt(0)) + (name.length() > 1 ? name.substring(1) : "");
@@ -267,6 +270,7 @@ final class TypeValue {
       this.typeKind = typeKind;
       this.objectType = objectType;
       this.isNullable = isNullable;
+      this.builderMethodsPrefix = builderMethodsPrefix;
     }
 
     public boolean isDefault() {
@@ -281,6 +285,10 @@ final class TypeValue {
       return name;
     }
 
+    public String getNameCapital() {
+      return Character.toUpperCase(name.charAt(0)) + (name.length() > 1 ? name.substring(1) : "");
+    }
+
     public boolean isNullable() {
       return isNullable;
     }
@@ -291,6 +299,14 @@ final class TypeValue {
 
     public boolean isPrimitive() {
       return typeKind.isPrimitive();
+    }
+
+    public String getBuilderMethodsPrefix() {
+      return builderMethodsPrefix;
+    }
+
+    public boolean hasBuilderMethodsPrefix() {
+      return builderMethodsPrefix != null && !"".equals(builderMethodsPrefix);
     }
 
     public String getTypeString() {
@@ -364,5 +380,6 @@ final class TypeValue {
     public int compareTo(PropertyValue o) {
       return this.getGetMethod().compareTo(o.getGetMethod());
     }
+
   }
 }

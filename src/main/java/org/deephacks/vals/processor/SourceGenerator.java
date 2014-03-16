@@ -209,7 +209,13 @@ abstract class SourceGenerator {
 
   private void generateBuilderMethod(PropertyValue p, JDefinedClass builderclass) throws ClassNotFoundException {
     JType returnType = codeModel.parseType(p.getTypeString());
-    JMethod method = builderclass.method(JMod.PUBLIC, builderclass, p.getName());
+    JMethod method;
+    if (p.hasBuilderMethodsPrefix()) {
+      method = builderclass.method(JMod.PUBLIC, builderclass, p.getBuilderMethodsPrefix() + p.getNameCapital());
+    } else {
+      method = builderclass.method(JMod.PUBLIC, builderclass, p.getBuilderMethodsPrefix() + p.getName());
+    }
+
     JVar param = method.param(returnType, p.getName());
     builderSetProperty(method.body(), param, p);
     method.body()._return(JExpr._this());

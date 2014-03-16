@@ -52,9 +52,12 @@ public class AnnotationProcessor extends AbstractProcessor {
     boolean claimed = false;
     for (TypeElement type : annotations) {
       Class<? extends Annotation> annotation = asAnnotation(type);
-      claimed = annotation != null &&
-              (VirtualValue.class.isAssignableFrom(annotation) || FinalValue.class.isAssignableFrom(annotation));
-      if (claimed) {
+
+      if (FinalValue.class.isAssignableFrom(annotation)) {
+        claimed = true;
+        process(roundEnv, annotation);
+      } else if (VirtualValue.class.isAssignableFrom(annotation)) {
+        claimed = true;
         process(roundEnv, annotation);
       }
     }
@@ -66,7 +69,15 @@ public class AnnotationProcessor extends AbstractProcessor {
     Collection<? extends TypeElement> types = ElementFilter.typesIn(annotatedElements);
     for (TypeElement type : types) {
       try {
-        processType(type, annotation);
+        FinalValue finalValue = type.getAnnotation(FinalValue.class);
+        if (finalValue != null) {
+          processType(type, annotation, finalValue.builderPrefix());
+        }
+        VirtualValue virtualValue = type.getAnnotation(VirtualValue.class);
+        if (virtualValue != null) {
+          processType(type, annotation, virtualValue.builderPrefix());
+        }
+
       } catch (CompileException e) {
         reportError(e);
       } catch (RuntimeException e) {
@@ -76,7 +87,7 @@ public class AnnotationProcessor extends AbstractProcessor {
     }
   }
 
-  private void processType(TypeElement type, Class<? extends Annotation> annotation) throws CompileException {
+  private void processType(TypeElement type, Class<? extends Annotation> annotation, String builderMethodPrefix) throws CompileException {
     if (type.getKind() != ElementKind.INTERFACE) {
       abortWithError("@" + annotation.getName() + " can only be applied to interfaces", type);
     }
@@ -88,11 +99,11 @@ public class AnnotationProcessor extends AbstractProcessor {
     SourceGenerator subClassGenerator;
     SourceGenerator builderGenerator;
     if (annotation.isAssignableFrom(VirtualValue.class)) {
-      source = new TypeValue(processingEnv, type, "VirtualValue_");
+      source = new TypeValue(processingEnv, type, "VirtualValue_", builderMethodPrefix);
       subClassGenerator = new VirtualValueSource(source);
       builderGenerator = new VirtualValueSource(source);
     } else {
-      source = new TypeValue(processingEnv, type, "FinalValue_");
+      source = new TypeValue(processingEnv, type, "FinalValue_", builderMethodPrefix);
       subClassGenerator = new FinalValueSource(source);
       builderGenerator = new FinalValueSource(source);
     }
