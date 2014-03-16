@@ -1,6 +1,6 @@
 ### vals - immutable interfaces
 
-The purpose of vals is to provide Java programmers with a productive way of creating extendable immutable value objects with automatically generated builders from standard Java interfaces.
+The purpose of vals is to provide a productive way of creating extendable immutable value objects with automatically generated builders from standard Java interfaces.
 
 ### How to use @FinalValue
 
