@@ -336,7 +336,7 @@ public interface Example {
 
 Example example = new ExampleBuilder().withValue("v1").withValue2("v2").build();
 ObjectMapper mapper = new ObjectMapper();
-String exampleString = mapper.writeValueAsString(james);
+String exampleString = mapper.writeValueAsString(example);
 example = mapper.readValue(exampleString, Example.class);
 
 ```
