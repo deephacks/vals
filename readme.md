@@ -246,8 +246,6 @@ Example example = new ExampleBuilder().build();
 System.out.println(example.getNumbers());
 ```
 
-#### Properties can have default fallback values.
-
 #### Classes can have default methods.
 
 
