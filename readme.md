@@ -292,7 +292,7 @@ public interface Example {
   }
 
   // Convention: static, name 'toString', one argument with same type, return String.
-  static String toString(OverrideAndPostConstructFinal o) {
+  static String toString(Example o) {
     return o.getValue1();
   }
 }
@@ -311,7 +311,7 @@ public interface Example {
   String getValue2();
   
   // Convention: static, name 'postConstruct', one argument with same type, return void.
-  static void postConstruct(OverrideAndPostConstructFinal o) {
+  static void postConstruct(Example o) {
     if (o.getValue1().equals("illegal")) {
       throw new IllegalArgumentException("illegal value1");
     }
