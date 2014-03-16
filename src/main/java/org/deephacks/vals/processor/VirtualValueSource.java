@@ -12,15 +12,15 @@ import com.sun.codemodel.JMod;
 import com.sun.codemodel.JOp;
 import com.sun.codemodel.JType;
 import com.sun.codemodel.JVar;
-import org.deephacks.vals.VirtualState;
-import org.deephacks.vals.VirtualState.DefaultVirtualStorage;
 import org.deephacks.vals.processor.TypeValue.PropertyValue;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class VirtualValueSource extends SourceGenerator {
-  private String virtualStateField = "virtualState";
+  private String stateField = "state";
 
   public VirtualValueSource(TypeValue type) {
     super(type);
@@ -28,14 +28,16 @@ public class VirtualValueSource extends SourceGenerator {
 
   @Override
   public JFieldRef getSubClassField(PropertyValue p) {
-    return JExpr._this().ref(virtualStateField);
+    return JExpr._this().ref(stateField);
   }
 
   @Override
   public void generateSubClassConstructor(JMethod constructor) throws ClassNotFoundException {
-    JType type = codeModel.parseType(VirtualState.class.getName());
-    JVar param = constructor.param(type, virtualStateField);
-    JFieldRef ref = JExpr._this().ref(virtualStateField);
+    JType type = codeModel.ref(Map.class.getName()).narrow(
+            codeModel.ref("String"),
+            codeModel.ref("Object"));
+    JVar param = constructor.param(type, stateField);
+    JFieldRef ref = JExpr._this().ref(stateField);
     constructor.body().assign(ref, param);
     for (PropertyValue p : this.type.getProperties()) {
       nullCheck(constructor, p);
@@ -74,7 +76,7 @@ public class VirtualValueSource extends SourceGenerator {
     JMethod method = subclass.method(JMod.PUBLIC, returnType, p.getGetMethod());
     method.annotate(Override.class);
     method.annotate(SuppressWarnings.class).param("value", "all");
-    JInvocation get = JExpr._this().ref(virtualStateField).invoke("get").arg(p.getName());
+    JInvocation get = JExpr._this().ref(stateField).invoke("get").arg(p.getName());
     JExpression cast = JExpr.cast(returnType, get);
     if (p.isArray()) {
       codeModel.ref(Arrays.class);
@@ -92,26 +94,31 @@ public class VirtualValueSource extends SourceGenerator {
 
   @Override
   protected void generateSubClassFields() {
-    subclass.field(JMod.PRIVATE | JMod.FINAL, VirtualState.class, virtualStateField);
+    JType type = codeModel.ref(Map.class.getName()).narrow(
+            codeModel.ref("String"),
+            codeModel.ref("Object"));
+    subclass.field(JMod.PRIVATE | JMod.FINAL, type, stateField);
   }
 
   @Override
   protected JExpression getSubClassNullCheck(PropertyValue p) {
-    return getSubClassField(null).invoke("isNull").arg(JExpr.lit(p.getName()));
+    return JOp.not(getSubClassField(null).invoke("containsKey").arg(JExpr.lit(p.getName())));
   }
 
   @Override
   protected void builderSetProperty(JBlock block, JVar param, PropertyValue p) {
-    JInvocation set = JExpr._this().ref(virtualStateField).invoke("set");
-    set.arg(JExpr.lit(p.getName()));
-    set.arg(param);
-    block.add(set);
+    JInvocation put = JExpr._this().ref(stateField).invoke("put");
+    put.arg(JExpr.lit(p.getName()));
+    put.arg(param);
+    block.add(put);
   }
 
   @Override
   protected List<JFieldVar> addBuilderFields(JDefinedClass builderclass) throws ClassNotFoundException {
-    JType proxyType = codeModel.parseType(DefaultVirtualStorage.class.getName());
-    return Arrays.asList(builderclass.field(JMod.PRIVATE | JMod.FINAL, DefaultVirtualStorage.class, virtualStateField, JExpr._new(proxyType)));
+    JType type = codeModel.ref(HashMap.class.getName()).narrow(
+            codeModel.ref("String"),
+            codeModel.ref("Object"));
+    return Arrays.asList(builderclass.field(JMod.PRIVATE | JMod.FINAL, type, stateField, JExpr._new(type)));
   }
 
 }
