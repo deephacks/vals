@@ -39,6 +39,7 @@ public class Proxy<T> {
     private AtomicReference<String> propertyName = new AtomicReference<>();
     private T proxy;
     private Object value;
+    private String prefix = "with";
     public Builder(Class<T> cls) {
       try {
         this.cls = (Class<T>) cls;
@@ -66,7 +67,7 @@ public class Proxy<T> {
         String propertyName = getPropertyName(property, value);
         for (Method m : builderClass.getMethods()) {
           String methodName = m.getName();
-          if (methodName.equals(propertyName)) {
+          if (methodName.equalsIgnoreCase(prefix + propertyName)) {
             m.invoke(builder, value);
             return this;
           }
