@@ -114,39 +114,39 @@ public interface Example {
 #### A builder class is generated automatically at compile time.
 
 ```java
-InnerValue inner = new InnerValueBuilder().integer(1).value("value").build();
+InnerValue inner = new InnerValueBuilder().withInteger(1).withValue("value").build();
 
 Example example = new ExampleBuilder()
-        .anEnum(TimeUnit.DAYS)
-        .booleanObject(true)
-        .booleanPrim(true)
-        .booleanPrimArray(new boolean[]{true})
-        .byteObject((byte) 1)
-        .bytePrim((byte) 1)
-        .bytePrimArray(new byte[]{1})
-        .charObject('a')
-        .charPrim('a')
-        .charPrimArray(new char[]{'a'})
-        .doubleObject(Double.MAX_VALUE)
-        .doublePrim(123456890.1234567890)
-        .doublePrimArray(new double[]{Double.MIN_VALUE})
-        .floatObject(1.0f)
-        .floatPrim(0.123456789f)
-        .floatPrimArray(new float[]{Float.MIN_VALUE})
-        .innerValue(inner)
-        .innerValueList(Arrays.asList(inner))
-        .innerValueMap(Collections.emptyMap())
-        .innerValueSet(Collections.singleton(inner))
-        .intPrim(1)
-        .intPrimArray(new int[]{1})
-        .integerObject(2)
-        .longObject(Long.MAX_VALUE)
-        .longPrim(123456789123456789L)
-        .longPrimArray(new long[]{Long.MIN_VALUE})
-        .shortObject((short) 1)
-        .shortPrim((short) 2)
-        .shortPrimArray(new short[]{1})
-        .string("string")
+        .withAnEnum(TimeUnit.DAYS)
+        .withBooleanObject(true)
+        .withBooleanPrim(true)
+        .withBooleanPrimArray(new boolean[]{true})
+        .withByteObject((byte) 1)
+        .withBytePrim((byte) 1)
+        .withBytePrimArray(new byte[]{1})
+        .withCharObject('a')
+        .withCharPrim('a')
+        .withCharPrimArray(new char[]{'a'})
+        .withDoubleObject(Double.MAX_VALUE)
+        .withDoublePrim(123456890.1234567890)
+        .withDoublePrimArray(new double[]{Double.MIN_VALUE})
+        .withFloatObject(1.0f)
+        .withFloatPrim(0.123456789f)
+        .withFloatPrimArray(new float[]{Float.MIN_VALUE})
+        .withInnerValue(inner)
+        .withInnerValueList(Arrays.asList(inner))
+        .withInnerValueMap(Collections.emptyMap())
+        .withInnerValueSet(Collections.singleton(inner))
+        .withIntPrim(1)
+        .withIntPrimArray(new int[]{1})
+        .withIntegerObject(2)
+        .withLongObject(Long.MAX_VALUE)
+        .withLongPrim(123456789123456789L)
+        .withLongPrimArray(new long[]{Long.MIN_VALUE})
+        .withShortObject((short) 1)
+        .withShortPrim((short) 2)
+        .withShortPrimArray(new short[]{1})
+        .withString("string")
         .build();
 ```
 
@@ -163,14 +163,14 @@ Example{anEnum=DAYS,booleanObject=true,booleanPrim=true,booleanPrimArray=[true],
 #### hashCode and equals are generated automatically
 
 ```java
-InnerValue i1 = new InnerValueBuilder().integer(1).value("value").build();
-InnerValue i2 = new InnerValueBuilder().integer(1).value("value").build();
+InnerValue i1 = new InnerValueBuilder().withInteger(1).withValue("value").build();
+InnerValue i2 = new InnerValueBuilder().withInteger(1).withValue("value").build();
 
 i1.equals(i2);                  // true
 i2.equals(i1);                  // true
 i1.hashCode() == i2.hashCode(); // true
 
-InnerValue i3 = new InnerValueBuilder().integer(3).value("value3").build();
+InnerValue i3 = new InnerValueBuilder().withInteger(3).withValue("value3").build();
 
 i1.equals(i3);                  // false
 i3.equals(i1);                  // false
@@ -188,10 +188,10 @@ public interface Person {
 }
 
 // generates NullPointerException("age is null.")
-new PersonBuilder().name("jim").build();
+new PersonBuilder().witNname("jim").build();
 
 // ok!
-new PersonBuilder().name("jim").age(30).build();
+new PersonBuilder().witNname("jim").withAge(30).build();
 ```
 
 #### Properties can be nullable.
@@ -210,7 +210,7 @@ public interface Example {
 new ExampleBuilder().build();
 
 // ok, since value1 is nullable
-Example e = new ExampleBuilder().value2("value").build();
+Example e = new ExampleBuilder().withValue2("value").build();
 
 // use java.util.Optional to access nullable values
 Optional<String> nullable = Optional.ofNullable(e.getValue1());
@@ -262,7 +262,7 @@ public interface Person {
   }
 }
 
-Person p = new PersonBuilder().forename("Linus").surename("Torvalds").build();
+Person p = new PersonBuilder().withForename("Linus").withSurename("Torvalds").build();
 
 // prints Linus Torvalds
 System.out.println(p.fullname());
@@ -325,7 +325,7 @@ public interface Example {
 Jackson can serialize @FinalValue interfaces directly since all properties are exposed as getter method. Jackson can also deserialize @FinalValue interfaces using @JsonDeserialize with a 'builder' argument.
 
 ```java
-@FinalValue(builderPrefix = "with")
+@FinalValue
 @JsonDeserialize(builder=ExampleBuilder.class)
 public interface Example {
   String getValue();
