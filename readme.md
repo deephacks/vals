@@ -188,10 +188,10 @@ public interface Person {
 }
 
 // generates NullPointerException("age is null.")
-new PersonBuilder().witNname("jim").build();
+new PersonBuilder().witName("jim").build();
 
 // ok!
-new PersonBuilder().witNname("jim").withAge(30).build();
+new PersonBuilder().witName("jim").withAge(30).build();
 ```
 
 #### Properties can be nullable.
