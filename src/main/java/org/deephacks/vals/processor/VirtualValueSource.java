@@ -1,6 +1,7 @@
 package org.deephacks.vals.processor;
 
 import com.sun.codemodel.JBlock;
+import com.sun.codemodel.JClass;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
@@ -121,4 +122,9 @@ public class VirtualValueSource extends SourceGenerator {
     return Arrays.asList(builderclass.field(JMod.PRIVATE | JMod.FINAL, type, stateField, JExpr._new(type)));
   }
 
+  protected void generateAnyBuilder(JDefinedClass builderclass, JClass realClass, JClass subclass) {
+    JMethod create = builderclass.method(JMod.PUBLIC | JMod.STATIC, subclass, "build");
+    JVar storage = create.param(Map.class, "state");
+    create.body()._return(JExpr._new(subclass).arg(storage));
+  }
 }

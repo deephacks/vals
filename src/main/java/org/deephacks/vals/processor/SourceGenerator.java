@@ -188,18 +188,11 @@ abstract class SourceGenerator {
       JMethod build = builderclass.method(JMod.PUBLIC, realClass, "build");
 
       JInvocation returnStmt = JExpr._new(subclass);
-      for (JFieldVar field : fields) {
-        returnStmt.arg(field);
-      }
+      fields.forEach(returnStmt::arg);
 
       build.body()._return(returnStmt);
 
-      /*
-      // _create method
-      JMethod create = builderclass.method(JMod.PRIVATE | JMod.STATIC, subclass, "_create");
-      JVar storage = create.param(VirtualState.class, "storage");
-      create.body()._return(JExpr._new(subclass).arg(storage));
-      */
+      generateAnyBuilder(builderclass, realClass, subclass);
 
       return new SourceWriter(codeModel).getSource();
     } catch (Exception e) {
@@ -219,6 +212,10 @@ abstract class SourceGenerator {
     JVar param = method.param(returnType, p.getName());
     builderSetProperty(method.body(), param, p);
     method.body()._return(JExpr._this());
+  }
+
+  protected void generateAnyBuilder(JDefinedClass builderclass, JClass realClass, JClass subclass) {
+
   }
 
   private static class SourceWriter extends CodeWriter {
