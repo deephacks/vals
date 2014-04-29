@@ -5,7 +5,7 @@
   <artifactId>vals</artifactId>
   <name>vals</name>
   <packaging>jar</packaging>
-  <version>0.5.6</version>
+  <version>0.5.7-SNAPSHOT</version>
   <description>Build immutable value objects from interfaces</description>
   <url>http://vals.deephacks.org</url>
   <inceptionYear>2014</inceptionYear>
