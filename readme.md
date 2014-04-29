@@ -1,4 +1,5 @@
 ### vals - immutable interfaces
+[![Build Status](https://travis-ci.org/deephacks/vals.png?branch=master)](https://travis-ci.org/deephacks/vals)
 
 The purpose of vals is to provide a productive way of creating extendable immutable value objects with automatically generated builders from standard Java interfaces. No runtime dependencies required.
 
