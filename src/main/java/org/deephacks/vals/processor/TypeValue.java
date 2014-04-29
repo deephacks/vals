@@ -258,6 +258,7 @@ final class TypeValue {
     private boolean isNullable = false;
     private String name;
     private String getMethod;
+    private String withMethod;
     private TypeKind typeKind;
     private String objectType;
     private String builderMethodsPrefix;
@@ -265,7 +266,9 @@ final class TypeValue {
     public PropertyValue(String name, boolean isDefault, boolean isNullable, TypeKind typeKind, String objectType, String builderMethodsPrefix) {
       this.getMethod = name;
       name = name.substring(3, name.length());
+      this.withMethod = builderMethodsPrefix + name;
       this.name = Character.toLowerCase(name.charAt(0)) + (name.length() > 1 ? name.substring(1) : "");
+
       this.isDefault = isDefault;
       this.typeKind = typeKind;
       this.objectType = objectType;
@@ -279,6 +282,10 @@ final class TypeValue {
 
     public String getGetMethod() {
       return getMethod;
+    }
+
+    public String getWithMethod() {
+      return withMethod;
     }
 
     public String getName() {

@@ -186,11 +186,31 @@ abstract class SourceGenerator {
 
       // build method
       JMethod build = builderclass.method(JMod.PUBLIC, realClass, "build");
-
       JInvocation returnStmt = JExpr._new(subclass);
       fields.forEach(returnStmt::arg);
-
       build.body()._return(returnStmt);
+
+      // static builderFrom method
+      JMethod builderFrom = builderclass.method(JMod.PUBLIC | JMod.STATIC, builderclass, "builderFrom");
+      JVar valueObject = builderFrom.param(subclass, "value");
+      JVar builder = builderFrom.body().decl(builderclass, "builder", JExpr._new(builderclass));
+      for (PropertyValue p : type.getProperties()) {
+        JInvocation arg = builder.invoke(p.getWithMethod()).arg(valueObject.invoke(p.getGetMethod()));
+        builderFrom.body().add(arg);
+        /*
+        JType type = codeModel.ref(Map.class.getName()).narrow(
+                codeModel.ref("String"),
+                codeModel.ref("Object"));
+        JVar param = constructor.param(type, stateField);
+        JFieldRef ref = JExpr._this().ref(stateField);
+        constructor.body().assign(ref, param);
+        for (PropertyValue p : this.type.getProperties()) {
+          nullCheck(constructor, p);
+        }
+        */
+      }
+      builderFrom.body()._return(builder);
+
 
       generateAnyBuilder(builderclass, realClass, subclass);
 
