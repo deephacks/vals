@@ -19,7 +19,7 @@ Notice the following conventions.
 * All values are checked for null when constructed/built unless the method is @javax.annotation.Nullable.
 * Properties can define default values by returning them from the method on the interface.
 * @FinalValue interfaces can extend any interface as long as it provide a default implementation.
-* A post construction hook can be defined by @FinalValue interfaces that need to validate/constrain properties further.
+* A post construction hook (called inside the constructor) can be defined by @FinalValue interfaces that need to validate/constrain properties further.
 
 ### pom.xml
 
@@ -29,7 +29,7 @@ Notice that that these dependencies only require the 'provided' scope which mean
 <dependency>
   <groupId>org.deephacks.vals</groupId>
   <artifactId>vals</artifactId>
-  <version>0.5.1</version>
+  <version>0.5.6</version>
   <scope>provided</scope>
 </dependency>
 <dependency>
