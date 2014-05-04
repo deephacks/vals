@@ -269,6 +269,24 @@ Person p = new PersonBuilder().withForename("Linus").withSurename("Torvalds").bu
 System.out.println(p.fullname());
 ```
 
+#### Copy instances
+
+
+```java
+@FinalValue
+public interface Person {
+
+  String getForename();
+
+  String getSurname();
+
+  PersonBuilder copy() { return PersonBuilder.builderFrom(this); }
+}
+
+Person p1 = new PersonBuilder().withForename("Linus").withSurename("Torvalds").build();
+Person p2 = p1.copy().withForename("Wife").build();
+```
+
 
 #### Override hashCode, equals and toString.
 
