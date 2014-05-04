@@ -20,6 +20,7 @@ Notice the following conventions.
 * Properties can define default values by returning them from the method on the interface.
 * @FinalValue interfaces can extend any interface as long as it provide a default implementation.
 * A post construction hook (called inside the constructor) can be defined by @FinalValue interfaces that need to validate/constrain properties further.
+* Even tough instances are immutable each builder is equipped with a method that construct a builder copy from an existing instance with same values. This makes it easy to update values without violating immutability.
 
 ### pom.xml
 
