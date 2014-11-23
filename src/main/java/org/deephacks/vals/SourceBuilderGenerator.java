@@ -19,6 +19,7 @@ class SourceBuilderGenerator extends SourceGenerator {
     if (type.hasArrayField()) {
       writer.emitImports(Arrays.class.getName());
     }
+    writer.emitImports(DirectBuffer.class.getName());
     writer.emitEmptyLine();
 
     writer.beginType(className, "class", PUBLIC);
@@ -51,14 +52,14 @@ class SourceBuilderGenerator extends SourceGenerator {
   }
 
   private void writeDecodeMethods() throws IOException {
-    /*
     writer.beginMethod(type.getClassName(), "parseFrom", SourceGenerator.PUBLIC_STATIC, "byte[]", "bytes");
-    writer.emitStatement("return null");
+    writer.emitStatement("DirectBuffer buffer = new DirectBuffer(bytes)");
+    writer.emitStatement("return new " + type.getGeneratedType() + "(buffer, 0)");
     writer.endMethod();
-    writer.beginMethod(type.getClassName(), "parseFrom", SourceGenerator.PUBLIC_STATIC, "Bytes", "bytes");
-    writer.emitStatement("return null");
+    writer.beginMethod(type.getClassName(), "parseFrom", SourceGenerator.PUBLIC_STATIC,
+      "DirectBuffer", "buffer", "int", "offset");
+    writer.emitStatement("return new " + type.getGeneratedType() + "(buffer, offset)");
     writer.endMethod();
-    */
   }
 
   private void writeCopyMethod() throws IOException {

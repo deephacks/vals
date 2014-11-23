@@ -27,6 +27,7 @@ class SourceClassTypeGenerator extends SourceGenerator {
     }
 
     writer.emitImports(Entry.class.getCanonicalName());
+    writer.emitImports(DirectBuffer.class.getCanonicalName());
     writer.emitImports(Sizes.class.getCanonicalName());
 
     writer.emitEmptyLine();
