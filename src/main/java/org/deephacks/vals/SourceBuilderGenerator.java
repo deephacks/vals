@@ -60,6 +60,10 @@ class SourceBuilderGenerator extends SourceGenerator {
       "DirectBuffer", "buffer", "int", "offset");
     writer.emitStatement("return new " + type.getGeneratedType() + "(buffer, offset)");
     writer.endMethod();
+    writer.beginMethod(type.getClassName(), "parseFrom", SourceGenerator.PUBLIC_STATIC,
+      "DirectBuffer", "buffer");
+    writer.emitStatement("return new " + type.getGeneratedType() + "(buffer, 0)");
+    writer.endMethod();
   }
 
   private void writeCopyMethod() throws IOException {
