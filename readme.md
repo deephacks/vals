@@ -3,7 +3,7 @@
 
 The purpose of vals is to provide a productive way of creating extendable immutable value objects with automatically generated builders from standard Java interfaces. No runtime dependencies required.
 
-### How to use @FinalValue
+### How to use @Val
 
 Create an interface and annotate it with @Val. All non-void, parameterless, getter methods on this interface will be treated as properties, each having same type as the return type of the method. 
 
