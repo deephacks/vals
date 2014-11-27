@@ -5,21 +5,21 @@ The purpose of vals is to provide a productive way of creating extendable immuta
 
 ### How to use @FinalValue
 
-Create an interface and annotate it with @FinalValue. All non-void, parameterless, getter methods on this interface will be treated as properties, each having same type as the return type of the method. 
+Create an interface and annotate it with @Val. All non-void, parameterless, getter methods on this interface will be treated as properties, each having same type as the return type of the method. 
 
 Two classes will automatically be generated at compile time.
 
-* A class named FinalValue_[name].java that implement the @FinalValue interface.
-* A builder class named [name]Builder.java that construct @FinalValue interface objects using the Builder pattern.
+* A class named Val_[name].java that implement the @Val interface.
+* A builder class named [name]Builder.java that construct @Val interface objects using the Builder pattern.
 
 Notice the following conventions.
 
 * The implementation is immutable and implements toString, equals and hashCode based on defined properties.
-* Default hashCode, equals and toString method can be vetoed by the @FinalValue interface using naming conventions.
+* Default hashCode, equals and toString method can be vetoed by the @Val interface using naming conventions.
 * All values are checked for null when constructed/built unless the method is @javax.annotation.Nullable.
 * Properties can define default values by returning them from the method on the interface.
-* @FinalValue interfaces can extend any interface as long as it provide a default implementation.
-* A post construction hook (called inside the constructor) can be defined by @FinalValue interfaces that need to validate/constrain properties further.
+* @Val interfaces can extend any interface as long as it provide a default implementation.
+* A post construction hook (called inside the constructor) can be defined by @Val interfaces that need to validate/constrain properties further.
 * Even tough instances are immutable each builder is equipped with a method that construct a builder copy from an existing instance with same values. This makes it easy to update values without violating immutability.
 
 ### pom.xml
@@ -30,85 +30,60 @@ Notice that that these dependencies only require the 'provided' scope which mean
 <dependency>
   <groupId>org.deephacks.vals</groupId>
   <artifactId>vals</artifactId>
-  <version>0.5.6</version>
+  <version>${version}</version>
   <scope>provided</scope>
 </dependency>
 <dependency>
-  <groupId>com.sun.codemodel</groupId>
-  <artifactId>codemodel</artifactId>
-  <version>2.6</version>
+  <groupId>com.squareup</groupId>
+  <artifactId>javawriter</artifactId>
+  <version>2.4.0</version>
   <scope>provided</scope>
 </dependency>
 ```
-This plugin may be required for intellij to recognize generated source files.
 
-```xml
-<plugin>
-  <groupId>org.codehaus.mojo</groupId>
-  <artifactId>build-helper-maven-plugin</artifactId>
-  <executions>
-    <execution>
-      <id>add-source</id>
-      <phase>generate-sources</phase>
-      <goals>
-        <goal>add-source</goal>
-      </goals>
-      <configuration>
-        <sources>
-          <source>${basedir}/target/generated-sources/annotations</source>
-        </sources>
-      </configuration>
-    </execution>
-  </executions>
-</plugin>
-```
-
-
-
-### @FinalValue example
+### @Val example
 
 ```java
-@FinalValue
+@Val
 public interface Example {
 
-  String getString();
-  Byte getByteObject();
-  Short getShortObject();
-  Integer getIntegerObject();
-  Long getLongObject();
-  Float getFloatObject();
-  Double getDoubleObject();
-  Character getCharObject();
-  Boolean getBooleanObject();
+  @Id(0) String getString();
+  @Id(1) Byte getByteObject();
+  @Id(3) Short getShortObject();
+  @Id(4) Integer getIntegerObject();
+  @Id(5) Long getLongObject();
+  @Id(6) Float getFloatObject();
+  @Id(7) Double getDoubleObject();
+  @Id(8) Character getCharObject();
+  @Id(9) Boolean getBooleanObject();
 
-  byte getBytePrim();
-  byte[] getBytePrimArray();
-  short getShortPrim();
-  short[] getShortPrimArray();
-  int getIntPrim();
-  int[] getIntPrimArray();
-  long getLongPrim();
-  long[] getLongPrimArray();
-  float getFloatPrim();
-  float[] getFloatPrimArray();
-  double getDoublePrim();
-  double[] getDoublePrimArray();
-  char getCharPrim();
-  char[] getCharPrimArray();
-  boolean getBooleanPrim();
-  boolean[] getBooleanPrimArray();
+  @Id(10) byte getBytePrim();
+  @Id(11) byte[] getBytePrimArray();
+  @Id(12) short getShortPrim();
+  @Id(13) short[] getShortPrimArray();
+  @Id(14) int getIntPrim();
+  @Id(15) int[] getIntPrimArray();
+  @Id(16) long getLongPrim();
+  @Id(17) long[] getLongPrimArray();
+  @Id(18) float getFloatPrim();
+  @Id(19) float[] getFloatPrimArray();
+  @Id(20) double getDoublePrim();
+  @Id(21) double[] getDoublePrimArray();
+  @Id(22) char getCharPrim();
+  @Id(23) char[] getCharPrimArray();
+  @Id(24) boolean getBooleanPrim();
+  @Id(25) boolean[] getBooleanPrimArray();
 
-  TimeUnit getAnEnum();
+  @Id(26) TimeUnit getAnEnum();
 
-  InnerValue getInnerValue();
-  List<InnerValue> getInnerValueList();
-  Map<String, InnerValue> getInnerValueMap();
-  Set<InnerValue> getInnerValueSet();
+  @Id(27) InnerVal getInnerValue();
+  @Id(28) List<InnerVal> getInnerValueList();
+  @Id(29) Map<String, InnerVal> getInnerValueMap();
 
-  @FinalValue
-  public static interface InnerValue {
-    public String getValue();
-    public int getInteger();
+  @Val
+  public static interface InnerVal {
+    @Id(0) String getValue();
+    @Id(1) int getInteger();
   }
 }
 ```
@@ -165,14 +140,14 @@ Example{anEnum=DAYS,booleanObject=true,booleanPrim=true,booleanPrimArray=[true],
 #### hashCode and equals are generated automatically
 
 ```java
-InnerValue i1 = new InnerValueBuilder().withInteger(1).withValue("value").build();
-InnerValue i2 = new InnerValueBuilder().withInteger(1).withValue("value").build();
+InnerVal i1 = new InnerValBuilder().withInteger(1).withValue("value").build();
+InnerVal i2 = new InnerValBuilder().withInteger(1).withValue("value").build();
 
 i1.equals(i2);                  // true
 i2.equals(i1);                  // true
 i1.hashCode() == i2.hashCode(); // true
 
-InnerValue i3 = new InnerValueBuilder().withInteger(3).withValue("value3").build();
+InnerVal i3 = new InnerValBuilder().withInteger(3).withValue("value3").build();
 
 i1.equals(i3);                  // false
 i3.equals(i1);                  // false
@@ -182,11 +157,11 @@ i1.hashCode() == i3.hashCode(); // false
 #### Properties have null checks.
 
 ```java
-@FinalValue
+@Val
 public interface Person {
   
-  String getName();
-  int getAge();
+  @Id(0) String getName();
+  @Id(1) int getAge();
 }
 
 // generates NullPointerException("age is null.")
@@ -199,13 +174,12 @@ new PersonBuilder().witName("jim").withAge(30).build();
 #### Properties can be nullable.
 
 ```java
-@FinalValue
+@Val
 public interface Example {
   
   @javax.annotation.Nullable
-  String getValue1();
-  
-  String getValue2();
+  @Id(0) String getValue1();
+  @Id(1) String getValue2();
 }
 
 // throws a new NullPointerException("value2 is null.")
@@ -218,10 +192,10 @@ Example e = new ExampleBuilder().withValue2("value").build();
 Optional<String> nullable = Optional.ofNullable(e.getValue1());
 ```
 
-#### Properties can have default fallback values.
+#### Properties can have default values.
 
 ```java
-@FinalValue
+@Val
 public interface Example {
 
   default String getForename() {
@@ -252,7 +226,7 @@ System.out.println(example.getNumbers());
 
 
 ```java
-@FinalValue
+@Val
 public interface Person {
 
   String getForename();
@@ -274,12 +248,12 @@ System.out.println(p.fullname());
 
 
 ```java
-@FinalValue
+@Val
 public interface Person {
 
-  String getForename();
+  @Id(0) String getForename();
 
-  String getSurname();
+  @Id(1) String getSurname();
 
   PersonBuilder copy() { return PersonBuilder.builderFrom(this); }
 }
@@ -291,15 +265,15 @@ Person p2 = p1.copy().withForename("Wife").build();
 
 #### Override hashCode, equals and toString.
 
-A @FinalValue interface can override default implementation of hashCode, equals and toString by defining static
+A @Val interface can override default implementation of hashCode, equals and toString by defining static
 methods following the signature and conventions shown below.
 
 ```java
-@FinalValue
+@Val
 public interface Example {
 
-  String getValue1();
-  String getValue2();
+  @Id(0) String getValue1();
+  @Id(1) String getValue2();
   
   // Convention: static, name 'equals', two arguments with same type, return boolean.
   static boolean equals(Example o1, Example o2) {
@@ -321,10 +295,10 @@ public interface Example {
 
 #### Post construction hook.
 
-A @FinalValue interface that need to validate/constrain properties further can define a method following the signature and conventions shown below.
+A @Val interface that need to validate/constrain properties further can define a method following the signature and conventions shown below.
 
 ```java
-@FinalValue
+@Val
 public interface Example {
 
   String getValue1();
@@ -345,8 +319,7 @@ public interface Example {
 Jackson can serialize @FinalValue interfaces directly since all properties are exposed as getter method. Jackson can also deserialize @FinalValue interfaces using @JsonDeserialize with a 'builder' argument.
 
 ```java
-@FinalValue
-@JsonDeserialize(builder=ExampleBuilder.class)
+@Val @JsonDeserialize(builder=ExampleBuilder.class)
 public interface Example {
   String getValue();
   Integer getValue2();
