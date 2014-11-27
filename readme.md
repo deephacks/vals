@@ -159,7 +159,6 @@ i1.hashCode() == i3.hashCode(); // false
 ```java
 @Val
 public interface Person {
-  
   @Id(0) String getName();
   @Id(1) int getAge();
 }
@@ -176,7 +175,6 @@ new PersonBuilder().witName("jim").withAge(30).build();
 ```java
 @Val
 public interface Example {
-  
   @javax.annotation.Nullable
   @Id(0) String getValue1();
   @Id(1) String getValue2();
@@ -229,9 +227,8 @@ System.out.println(example.getNumbers());
 @Val
 public interface Person {
 
-  String getForename();
-
-  String getSurname();
+  @Id(0) String getForename();
+  @Id(1) String getSurname();
 
   default String fullname() {
     return getForename() + " " + getSurname();
@@ -252,7 +249,6 @@ System.out.println(p.fullname());
 public interface Person {
 
   @Id(0) String getForename();
-
   @Id(1) String getSurname();
 
   PersonBuilder copy() { return PersonBuilder.builderFrom(this); }
@@ -301,8 +297,8 @@ A @Val interface that need to validate/constrain properties further can define a
 @Val
 public interface Example {
 
-  String getValue1();
-  String getValue2();
+  @Id(0) String getValue1();
+  @Id(1) String getValue2();
   
   // Convention: static, name 'postConstruct', one argument with same type, return void.
   static void postConstruct(Example o) {
@@ -321,8 +317,8 @@ Jackson can serialize @FinalValue interfaces directly since all properties are e
 ```java
 @Val @JsonDeserialize(builder=ExampleBuilder.class)
 public interface Example {
-  String getValue();
-  Integer getValue2();
+  @Id(0) String getValue();
+  @Id(1) Integer getValue2();
 }
 
 Example example = new ExampleBuilder().withValue("v1").withValue2("v2").build();
