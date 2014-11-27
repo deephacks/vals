@@ -312,7 +312,7 @@ public interface Example {
 
 #### Jackson Json Serialization
 
-Jackson can serialize @FinalValue interfaces directly since all properties are exposed as getter method. Jackson can also deserialize @FinalValue interfaces using @JsonDeserialize with a 'builder' argument.
+Jackson can serialize @Val interfaces directly since all properties are exposed as getter method. Jackson can also deserialize @Val interfaces using @JsonDeserialize with a 'builder' argument.
 
 ```java
 @Val @JsonDeserialize(builder=ExampleBuilder.class)
