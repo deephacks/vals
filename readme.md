@@ -246,7 +246,7 @@ System.out.println(p.fullname());
 
 ```java
 @Val
-public interface Person extends Comparable<Person> {
+public interface Person extends java.lang.Comparable<Person> {
   @Id(0) String getForename();
   @Id(1) String getSurname();
   
