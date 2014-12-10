@@ -241,8 +241,22 @@ Person p = new PersonBuilder().withForename("Linus").withSurename("Torvalds").bu
 System.out.println(p.fullname());
 ```
 
-#### Copy instances
+#### Extend interfaces
 
+
+```java
+@Val
+public interface Person extends Comparable<Person> {
+  @Id(0) String getForename();
+  @Id(1) String getSurname();
+  
+  default int compareTo(Person p){
+    return this.getSurname().compareTo(p.getSurname());
+  }
+}
+```
+
+#### Copy instances
 
 ```java
 @Val
@@ -257,7 +271,6 @@ public interface Person {
 Person p1 = new PersonBuilder().withForename("Linus").withSurename("Torvalds").build();
 Person p2 = p1.copy().withForename("Wife").build();
 ```
-
 
 #### Override hashCode, equals and toString.
 
