@@ -23,5 +23,4 @@ public interface Val6 extends Encodable {
   @Id(10) Map<TimeUnit, String> getEnumStringMap();
   @Id(11) Map<String, TimeUnit> getStringEnumMap();
   @Id(12) EnumSet<TimeUnit> getEnumSet();
-
 }

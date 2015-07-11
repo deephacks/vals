@@ -148,6 +148,11 @@ class SourceClassTypeGenerator extends SourceGenerator {
     writer.emitStatement("this.writeTo(buffer, 0)");
     writer.emitStatement("return buffer.byteArray()");
     writer.endMethod();
+
+    writer.beginMethod("DirectBuffer", "toDirectBuffer", SourceGenerator.PUBLIC);
+    writer.emitStatement("DirectBuffer buffer = new DirectBuffer(new byte[getTotalSize()])");
+    writer.emitStatement("return buffer");
+    writer.endMethod();
   }
 
   private void writeGetPointersMethod() throws IOException {
