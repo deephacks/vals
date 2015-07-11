@@ -1,112 +1,111 @@
 package org.deephacks.vals;
 
-public class Sizes {
+public final class Sizes {
 
-  public static int getSize(boolean v) {
+  public static final int getSize(boolean v) {
     return 1;
   }
-
-  public static int getSize(boolean[] v) {
+  public static final int getSize(boolean[] v) {
     return v.length + 4;
   }
 
-  public static int getSize(Boolean v) {
+  public static final int getSize(Boolean v) {
     return 1;
   }
 
-  public static int getSize(char v) {
+  public static final int getSize(char v) {
     return 2;
   }
 
-  public static int getSize(char[] v) {
+  public static final int getSize(char[] v) {
     return 2 * v.length + 4;
   }
 
-  public static int getSize(Character c) {
+  public static final int getSize(Character c) {
     return 2;
   }
 
-  public static int getSize(byte v) {
+  public static final int getSize(byte v) {
     return 1;
   }
 
-  public static int getSize(byte[] v) {
+  public static final int getSize(byte[] v) {
     return v.length + 4;
   }
 
-  public static int getSize(Byte v) {
+  public static final int getSize(Byte v) {
     return 1;
   }
 
-  public static int getSize(short v) {
+  public static final int getSize(short v) {
     return 2;
   }
 
-  public static int getSize(short[] v) {
+  public static final int getSize(short[] v) {
     return 2 * v.length + 4;
   }
 
-  public static int getSize(Short s) {
+  public static final int getSize(Short s) {
     return 2;
   }
 
-  public static int getSize(int v) {
+  public static final int getSize(int v) {
     return 4;
   }
 
-  public static int getSize(int[] v) {
+  public static final int getSize(int[] v) {
     return 4 * v.length + 4;
   }
 
-  public static int getSize(Integer v) {
+  public static final int getSize(Integer v) {
     return 4;
   }
 
-  public static int getSize(long v) {
+  public static final int getSize(long v) {
     return 8;
   }
 
-  public static int getSize(long[] v) {
+  public static final int getSize(long[] v) {
     return 8 * v.length + 4;
   }
 
-  public static int getSize(Long v) {
+  public static final int getSize(Long v) {
     return 8;
   }
 
-  public static int getSize(float v) {
+  public static final int getSize(float v) {
     return 4;
   }
 
-  public static int getSize(float[] v) {
+  public static final int getSize(float[] v) {
     return 4 * v.length + 4;
   }
 
-  public static int getSize(Float v) {
+  public static final int getSize(Float v) {
     return 4;
   }
 
-  public static int getSize(double v) {
+  public static final int getSize(double v) {
     return 8;
   }
 
-  public static int getSize(double[] v) {
+  public static final int getSize(double[] v) {
     return 8 * v.length + 4;
   }
 
-  public static int getSize(Double v) {
+  public static final int getSize(Double v) {
     return 8;
   }
 
-  public static long getSize(Enum en) {
+  public static final long getSize(Enum e) {
     return 4;
   }
 
-  public static long getSize(Encodable e) {
+  public static final long getSize(Encodable e) {
     return e.getTotalSize();
   }
 
-  public static long getSize(ByteString str) {
+  public static final long getSize(ByteString str) {
     return str.size() + 4;
   }
 }
