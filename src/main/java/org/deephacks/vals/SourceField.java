@@ -334,13 +334,13 @@ abstract class SourceField implements Comparable<SourceField> {
     public void write(JavaWriter writer, String... name) throws IOException {
       writer.emitStatement("fieldOffset = _pointers[" + getId() + "] + offset");
       if (isByteStringArrayList() || isByteString()) {
-        String stmt = writeBuf + ".putString(fieldOffset, " + name[0] + ")";
+        String stmt = writeBuf + ".putString(fieldOffset, " + name[0] + "())";
         writer.emitStatement(stmt);
       } else  if (getTypeInfo().isEnum()) {
-        String stmt = writeBuf + ".putInt(fieldOffset," + name[0] + ".ordinal())";
+        String stmt = writeBuf + ".putInt(fieldOffset," + name[0] + "().ordinal())";
         writer.emitStatement(stmt);
       } else {
-        String stmt = writeBuf + ".put" + getCapitalizedBufType() + "(fieldOffset, " + name[0] + ")";
+        String stmt = writeBuf + ".put" + getCapitalizedBufType() + "(fieldOffset, " + name[0] + "())";
         writer.emitStatement(stmt);
       }
     }
@@ -364,7 +364,7 @@ abstract class SourceField implements Comparable<SourceField> {
     public void write(JavaWriter writer, String... name) throws IOException {
       writer.emitStatement("fieldOffset = _pointers[" + getId() + "] + offset");
       String var = name.length > 0 ? name[0] : getName();
-      writer.emitStatement(writeBuf + ".putObject(fieldOffset, " + var + ")");
+      writer.emitStatement(writeBuf + ".putObject(fieldOffset, " + var + "())");
     }
   }
 
@@ -399,7 +399,7 @@ abstract class SourceField implements Comparable<SourceField> {
         writer.beginControlFlow("if (" + getName() + ".isPresent())");
         field.write(writer, getName() + ".get()");
       } else {
-        field.write(writer, getName());
+        field.write(writer, getGetMethod());
       }
       if (isOptional()) {
         writer.endControlFlow();
@@ -431,11 +431,11 @@ abstract class SourceField implements Comparable<SourceField> {
     @Override
     public void write(JavaWriter writer, String... name) throws IOException {
       writer.emitStatement("fieldOffset = _pointers[" + getId() + "] + offset");
-      writer.emitStatement(writeBuf + ".putInt(fieldOffset, " + getName() + ".length)");
+      writer.emitStatement(writeBuf + ".putInt(fieldOffset, " + getGetMethod() + "().length)");
       writer.emitStatement("fieldOffset += 4");
       writer.emitStatement("typeSize = " + getSizeStmt());
-      writer.beginControlFlow("for (int i = 0; i < " + getName() + ".length; i++)");
-      writer.emitStatement(put("fieldOffset", 0, getName() + "[i]"));
+      writer.beginControlFlow("for (int i = 0; i < " + getGetMethod() + "().length; i++)");
+      writer.emitStatement(put("fieldOffset", 0, getGetMethod() + "()[i]"));
       if (isBasicType()) {
         writer.emitStatement("fieldOffset += typeSize");
       } else {
@@ -493,7 +493,7 @@ abstract class SourceField implements Comparable<SourceField> {
         writer.beginControlFlow("if (" + getName() + ".isPresent())");
       }
       writer.emitStatement("fieldOffset = _pointers[" + getId() +  "] + offset");
-      writer.emitStatement(writeBuf + ".putInt(fieldOffset, " + getGetName() + ".size())");
+      writer.emitStatement(writeBuf + ".putInt(fieldOffset, " + getGetMethod() + "().size())");
       writer.emitStatement("fieldOffset += 4");
       writer.beginControlFlow("for (" + getType(0) + " e : " + getListIterator() + ")");
       writer.emitStatement(put("fieldOffset", 0, "e"));

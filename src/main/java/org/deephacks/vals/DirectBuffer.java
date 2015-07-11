@@ -584,6 +584,13 @@ public class DirectBuffer {
     return SIZE_OF_INT + bytes.length;
   }
 
+  public int putString(final int offset, final String value) {
+    final byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
+    putInt(offset, bytes.length, NATIVE_BYTE_ORDER);
+    putBytes(offset + SIZE_OF_INT, bytes);
+    return SIZE_OF_INT + bytes.length;
+  }
+
   public int putStringUtf8(final int offset, final String value, final ByteOrder byteOrder, final int maxEncodedSize) {
     final byte[] bytes = value != null ? value.getBytes(StandardCharsets.UTF_8) : NULL_BYTES;
     if (bytes.length > maxEncodedSize) {
